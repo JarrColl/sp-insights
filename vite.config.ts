@@ -4,6 +4,7 @@ import solidPlugin from 'vite-plugin-solid';
 import { superProductivityPlugin } from '@super-productivity/vite-plugin';
 
 export default defineConfig({
+  root: './src',
   plugins: [solidPlugin(), superProductivityPlugin()],
   test: {
     environment: 'jsdom',

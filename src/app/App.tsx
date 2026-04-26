@@ -1,7 +1,18 @@
 import { createSignal, createEffect, For, Show, onMount } from 'solid-js';
 import { Task, Project } from '@super-productivity/plugin-api';
 import { useTranslate } from '../utils/useTranslate';
-import './App.css';
+
+import './styles/base.css';
+import './styles/layout.css';
+import './styles/tabs.css';
+import './styles/views.css';
+import './styles/stats.css';
+import './styles/charts.css';
+import './styles/table.css';
+import './styles/breakdown.css';
+import Header from './components/Header';
+import TabbedDiv from './components/Tabs/TabbedDiv';
+import { log } from './utils/log';
 
 // Communication with plugin.js
 const sendMessage = async (type: string, payload?: any) => {
@@ -29,7 +40,6 @@ function App() {
     completedToday: 0,
     pendingTasks: 0,
   });
-  const [newTaskTitle, setNewTaskTitle] = createSignal('');
   const [selectedProjectId, setSelectedProjectId] = createSignal<string>('');
   const [settings, setSettings] = createSignal({ theme: 'light', showCompleted: true });
   const [isLoading, setIsLoading] = createSignal(true);
@@ -61,7 +71,9 @@ function App() {
   });
 
   // Load initial data
+  // TODO: REFRESH WHEN task change not just on mount.
   onMount(async () => {
+
     try {
       setIsLoading(true);
 
@@ -86,6 +98,13 @@ function App() {
 
   // Refresh data from Super Productivity
   const refreshData = async () => {
+    if (import.meta.env.DEV) {
+      const { loadMockData } = await import("./dev/loadMockData");
+      loadMockData(setTasks, setProjects);
+      log("Loaded mock data: ", tasks());
+      return;
+    }
+
     try {
       const [tasksData, projectsData] = await Promise.all([
         sendMessage('getTasks'),
@@ -96,28 +115,6 @@ function App() {
       setProjects(projectsData as Project[]);
     } catch (error) {
       console.error('Failed to refresh data:', error);
-    }
-  };
-
-  // Create a new task
-  const createTask = async () => {
-    const title = newTaskTitle().trim();
-    if (!title) return;
-
-    try {
-      await sendMessage('createTask', {
-        title,
-        projectId: selectedProjectId() || undefined,
-      });
-
-      setNewTaskTitle('');
-      await refreshData();
-
-      // Update stats
-      const statsData = (await sendMessage('getStats')) as any;
-      setStats(statsData);
-    } catch (error) {
-      console.error('Failed to create task:', error);
     }
   };
 
@@ -134,118 +131,11 @@ function App() {
 
   return (
     <div class="app">
-      <header class="app-header">
-        <h1>🚀 {appTitle()}</h1>
-        <button onClick={refreshData} class="refresh-btn">
-          {refreshButton()}
-        </button>
-      </header>
+      <Header />
 
-      <Show
-        when={isLoading()}
-        fallback={
-          <main class="app-main">
-            {/* Stats Section */}
-            <section class="stats-section">
-              <div class="stat-card">
-                <div class="stat-value">{stats().totalTasks}</div>
-                <div class="stat-label">{totalTasksLabel()}</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">{stats().completedToday}</div>
-                <div class="stat-label">{completedTodayLabel()}</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">{stats().pendingTasks}</div>
-                <div class="stat-label">{pendingLabel()}</div>
-              </div>
-            </section>
-
-            {/* Create Task Section */}
-            <section class="create-task-section">
-              <h2>{createNewLabel()}</h2>
-              <div class="create-task-form">
-                <input
-                  type="text"
-                  placeholder={taskPlaceholder()}
-                  value={newTaskTitle()}
-                  onInput={(e) => setNewTaskTitle(e.currentTarget.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && createTask()}
-                  class="task-input"
-                />
-                <select
-                  value={selectedProjectId()}
-                  onChange={(e) => setSelectedProjectId(e.currentTarget.value)}
-                  class="project-select"
-                >
-                  <option value="">{noProjectLabel()}</option>
-                  <For each={projects()}>
-                    {(project) => <option value={project.id}>{project.title}</option>}
-                  </For>
-                </select>
-                <button onClick={createTask} class="create-btn">
-                  {createButtonLabel()}
-                </button>
-              </div>
-            </section>
-
-            {/* Tasks List Section */}
-            <section class="tasks-section">
-              <h2>Recent Tasks</h2>
-              <div class="tasks-list">
-                <For each={tasks().slice(0, 10)}>
-                  {(task) => (
-                    <div class="task-item" classList={{ completed: task.isDone }}>
-                      <span class="task-title">{task.title}</span>
-                      <Show when={task.projectId}>
-                        <span class="task-project">
-                          {projects().find((p) => p.id === task.projectId)?.title}
-                        </span>
-                      </Show>
-                    </div>
-                  )}
-                </For>
-              </div>
-            </section>
-
-            {/* Settings Section */}
-            <section class="settings-section">
-              <h2>Settings</h2>
-              <div class="settings-form">
-                <label class="setting-item">
-                  <span>Theme:</span>
-                  <select
-                    value={settings().theme}
-                    onChange={(e) => setSettings({ ...settings(), theme: e.currentTarget.value })}
-                  >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </label>
-                <label class="setting-item">
-                  <input
-                    type="checkbox"
-                    checked={settings().showCompleted}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings(),
-                        showCompleted: e.currentTarget.checked,
-                      })
-                    }
-                  />
-                  <span>Show completed tasks</span>
-                </label>
-              </div>
-            </section>
-          </main>
-        }
-      >
-        <div class="loading">{loadingLabel()}</div>
-      </Show>
-
-      <footer class="app-footer">
-        <p>Built with Solid.js and Super Productivity Plugin API</p>
-      </footer>
+      <div class="main-card">
+        <TabbedDiv tasks={tasks()} projects={projects()} />
+      </div>
     </div>
   );
 }
