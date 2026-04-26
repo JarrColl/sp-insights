@@ -73,7 +73,6 @@ function App() {
   // Load initial data
   // TODO: REFRESH WHEN task change not just on mount.
   onMount(async () => {
-
     try {
       setIsLoading(true);
 
@@ -99,9 +98,9 @@ function App() {
   // Refresh data from Super Productivity
   const refreshData = async () => {
     if (import.meta.env.DEV) {
-      const { loadMockData } = await import("./dev/loadMockData");
+      const { loadMockData } = await import('./dev/loadMockData');
       loadMockData(setTasks, setProjects);
-      log("Loaded mock data: ", tasks());
+      log('Loaded mock data: ', tasks());
       return;
     }
 

@@ -30,23 +30,39 @@ function DetailedList(props: { tasks: Task[] }) {
           </tr>
         </thead>
         <tbody id="details-table-body">
-          <Show when={props.tasks.length > 0} fallback={
-            <tr>
-              <td colspan="5" style="text-align: center;">No tracked time found.</td>
-            </tr>
-          }>
+          <Show
+            when={props.tasks.length > 0}
+            fallback={
+              <tr>
+                <td colspan="5" style="text-align: center;">
+                  No tracked time found.
+                </td>
+              </tr>
+            }
+          >
             <For each={props.tasks}>
               {(task) => {
-                {/* const badge = getStatusBadge(task); */ }
+                {
+                  /* const badge = getStatusBadge(task); */
+                }
                 return (
                   <tr>
-                    <td style="white-space: nowrap;">{formatDateShort(toDateString(task.created))}</td>
+                    <td style="white-space: nowrap;">
+                      {formatDateShort(toDateString(task.created))}
+                    </td>
                     {/* <td class="project-cell" style="color: var(--text-color-muted, #9e9e9e); font-size: 0.875rem;">${projectCell(entry)}</td> */}
-                    <td class="project-cell" style="color: var(--text-color-muted, #9e9e9e); font-size: 0.875rem;">{task.projectId}</td>
+                    <td
+                      class="project-cell"
+                      style="color: var(--text-color-muted, #9e9e9e); font-size: 0.875rem;"
+                    >
+                      {task.projectId}
+                    </td>
                     <td style="font-weight: 500;">{task.title}</td>
                     <td class="time-cell">{formatTime(task.timeSpent)}</td>
                     {/* <td><span class="badge ${badge.cls}">${badge.label}</span></td> */}
-                    <td><span class="badge">placeholder</span></td>
+                    <td>
+                      <span class="badge">placeholder</span>
+                    </td>
                   </tr>
                 );
               }}

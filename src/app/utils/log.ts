@@ -1,5 +1,5 @@
 export const DEBUG = true;
 
 export const log = (...args: any) => {
-  if (DEBUG) console.log("[sp-dashboard]", ...args);
+  if (DEBUG) console.log('[sp-dashboard]', ...args);
 };

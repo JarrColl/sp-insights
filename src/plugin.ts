@@ -1,24 +1,9 @@
 import {
-  AnyTaskUpdatePayload,
   PluginAPI,
-  TaskCompletePayload,
-  TaskUpdatePayload,
+  PluginHooks
 } from '@super-productivity/plugin-api';
-import type { PluginHooks } from '@super-productivity/plugin-api';
 
 declare const plugin: PluginAPI;
-
-// Plugin initialization
-plugin.log.info('Boilerplate plugin initialized');
-
-// Example: Register a header button
-plugin.registerHeaderButton({
-  icon: 'rocket',
-  label: 'Open Boilerplate Plugin',
-  onClick: () => {
-    plugin.showIndexHtmlAsView();
-  },
-});
 
 // Example: Register a menu entry
 plugin.registerMenuEntry({
@@ -36,34 +21,6 @@ plugin.registerShortcut({
   onExec: () => {
     plugin.showIndexHtmlAsView();
   },
-});
-
-// Example: Hook into task completion
-plugin.registerHook(PluginHooks.TASK_COMPLETE, (taskData: TaskCompletePayload) => {
-  plugin.log.info('Task completed:', taskData.task.title);
-
-  // Example: Show notification
-  plugin.showSnack({
-    msg: `Great job! You completed: ${taskData.task.title}`,
-    type: 'SUCCESS',
-  });
-});
-
-// Example: Hook into task updates
-plugin.registerHook(PluginHooks.TASK_UPDATE, (taskData: TaskUpdatePayload) => {
-  plugin.log.info('Task updated:', taskData.task.title);
-});
-
-// Example: Hook into context changes
-plugin.registerHook(PluginHooks.ANY_TASK_UPDATE, async (payload: AnyTaskUpdatePayload) => {
-  const changes = payload.changes;
-  if (changes && 'projectId' in changes && changes.projectId) {
-    const projects = await plugin.getAllProjects();
-    const currentProject = projects.find((p) => p.id === changes.projectId);
-    if (currentProject) {
-      plugin.log.info('Switched to project:', currentProject.title);
-    }
-  }
 });
 
 // Example: Custom command handler
@@ -117,6 +74,30 @@ if (plugin.onMessage) {
     }
   });
 }
+
+// Listen for language changes and notify iframe
+plugin.registerHook(PluginHooks.ACTION, (action) => {
+
+  console.log("[sp-dashboard plugin] ACTION hook triggered", action.type);
+  // Super Productivity renders UI plugins inside sandboxed iframes.
+  // We locate our specific iframe and send it a lightweight trigger to refresh its data.
+  const iframes = document.querySelectorAll("iframe");
+
+  iframes.forEach((iframe) => {
+    if (iframe.src && iframe.src.includes("index.html")) {
+      console.log(
+        "[sp-dashboard plugin] sending SP_STATE_CHANGED to",
+        iframe.src,
+      );
+      (iframe as HTMLIFrameElement).contentWindow!.postMessage(
+        {
+          type: "SP_STATE_CHANGED",
+        },
+        "*",
+      );
+    }
+  });
+});
 
 // Listen for language changes and notify iframe
 plugin.registerHook(PluginHooks.LANGUAGE_CHANGE, (language: string) => {

@@ -1,6 +1,6 @@
 import { Task, Project } from '@super-productivity/plugin-api';
 
-function Dashboard(props: { tasks: Task[], projects: Project[] }) {
+function Dashboard(props: { tasks: Task[]; projects: Project[] }) {
   return (
     <div id="view-dashboard" class="view-content">
       <div class="grid-3">
