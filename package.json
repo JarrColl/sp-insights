@@ -40,20 +40,11 @@
         "scripts": {
           "prepare": "npm run build"
         }
-      },
-      "@super-productivity/plugin-api": {
-        "scripts": {
-          "prepare": "npm run build"
-        }
       }
     },
     "onlyBuiltDependencies": [
       "esbuild",
-      "@super-productivity/vite-plugin",
-      "@super-productivity/plugin-api"
+      "@super-productivity/vite-plugin"
     ]
-  },
-  "dependencies": {
-    "@super-productivity/plugin-api": "^1.0.1"
   }
 }

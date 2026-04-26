@@ -13,7 +13,11 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
-    "types": ["vite/client", "node"]
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@super-productivity/plugin-api": ["src/types/sp-plugin-api/index.ts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

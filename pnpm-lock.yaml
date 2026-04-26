@@ -4,15 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-packageExtensionsChecksum: sha256-crUhDoh5IPhPw92jrwr1TPSYJlwPnZ6/3i2Z/V/zuh8=
+packageExtensionsChecksum: sha256-sY3IoKux5XxwCClpnTQO4nAykY8aI0Qy2fXAdD03R2Q=
 
 importers:
 
   .:
-    dependencies:
-      '@super-productivity/plugin-api':
-        specifier: ^1.0.1
-        version: 1.0.1
     devDependencies:
       '@solidjs/router':
         specifier: ^0.15.4
@@ -607,10 +603,6 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
-
-  '@super-productivity/plugin-api@1.0.1':
-    resolution: {integrity: sha512-+HSPniglmt6jFJRA5yg4p9hv8SGiWUgq0BnctGQHh0HwSr8aopkOTiRAlZ0MRl6PcwCZ5JRM4Jxtr8uLouBsUw==}
-    engines: {node: '>=18.0.0'}
 
   '@super-productivity/vite-plugin@https://codeload.github.com/super-productivity/super-productivity/tar.gz/72e3241b79a0b3e05d8241f3223f00a749e21996#path:packages/vite-plugin':
     resolution: {path: packages/vite-plugin, tarball: https://codeload.github.com/super-productivity/super-productivity/tar.gz/72e3241b79a0b3e05d8241f3223f00a749e21996}
@@ -2260,8 +2252,6 @@ snapshots:
       '@solidjs/router': 0.15.4(solid-js@1.9.12)
 
   '@standard-schema/spec@1.1.0': {}
-
-  '@super-productivity/plugin-api@1.0.1': {}
 
   '@super-productivity/vite-plugin@https://codeload.github.com/super-productivity/super-productivity/tar.gz/72e3241b79a0b3e05d8241f3223f00a749e21996#path:packages/vite-plugin(vite@7.3.2)':
     dependencies:

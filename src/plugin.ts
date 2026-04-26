@@ -1,9 +1,26 @@
-import {
-  PluginAPI,
-  PluginHooks
-} from '@super-productivity/plugin-api';
+import { PluginAPI, PluginHooks } from '@super-productivity/plugin-api';
 
-declare const plugin: PluginAPI;
+// Local extensions to PluginAPI: these methods exist at runtime in
+// Super Productivity but are not declared in the upstream types.
+// Keep them here (not in the vendored types) so the vendored copy
+// stays a clean diff against upstream.
+interface PluginAPIExt extends PluginAPI {
+  translate(key: string, params?: Record<string, unknown>): Promise<string>;
+  getCurrentLanguage(): Promise<string>;
+}
+
+declare const plugin: PluginAPIExt;
+
+interface IncomingMessage {
+  type: string;
+  payload?: {
+    title?: string;
+    projectId?: string | null;
+    key?: string;
+    params?: Record<string, unknown>;
+    [k: string]: unknown;
+  };
+}
 
 // Example: Register a menu entry
 plugin.registerMenuEntry({
@@ -25,48 +42,51 @@ plugin.registerShortcut({
 
 // Example: Custom command handler
 if (plugin.onMessage) {
-  plugin.onMessage(async (message: any) => {
+  plugin.onMessage(async (raw: unknown) => {
+    const message = raw as IncomingMessage;
     switch (message?.type) {
-      case 'getStats':
+      case 'getStats': {
         const tasks = await plugin.getTasks();
         const completedToday = tasks.filter(
-          (t) => t.isDone && new Date(t.doneOn!).toDateString() === new Date().toDateString(),
+          (t) =>
+            t.isDone &&
+            t.doneOn != null &&
+            new Date(t.doneOn).toDateString() === new Date().toDateString(),
         );
-
         return {
           totalTasks: tasks.length,
           completedToday: completedToday.length,
           pendingTasks: tasks.filter((t) => !t.isDone).length,
         };
+      }
       case 'createTask': {
+        const title = message.payload?.title ?? '';
         const newTask = await plugin.addTask({
-          title: message.payload.title,
-          projectId: message.payload.projectId,
+          title,
+          projectId: message.payload?.projectId,
         });
-
         plugin.showSnack({
-          msg: `Task "${message.payload.title}" created!`,
+          msg: `Task "${title}" created!`,
           type: 'SUCCESS',
         });
-
         return newTask;
       }
       case 'getTasks':
         return await plugin.getTasks();
       case 'getAllProjects':
         return await plugin.getAllProjects();
-      // Example: Persist plugin data
       case 'saveSettings':
         await plugin.persistDataSynced(JSON.stringify(message.payload));
         return { success: true };
-      // Example: Load plugin data
       case 'loadSettings': {
         const settings = await plugin.loadSyncedData();
         return settings ? JSON.parse(settings) : {};
       }
-      // i18n support
       case 'translate':
-        return await plugin.translate(message.payload.key, message.payload.params);
+        return await plugin.translate(
+          message.payload?.key ?? '',
+          message.payload?.params,
+        );
       case 'getCurrentLanguage':
         return await plugin.getCurrentLanguage();
       default:
@@ -75,38 +95,24 @@ if (plugin.onMessage) {
   });
 }
 
-// Listen for language changes and notify iframe
-plugin.registerHook(PluginHooks.ACTION, (action) => {
-
-  console.log("[sp-dashboard plugin] ACTION hook triggered", action.type);
+plugin.registerHook(PluginHooks.ACTION, (payload) => {
+  console.log('[sp-dashboard plugin] ACTION hook triggered', payload.action);
   // Super Productivity renders UI plugins inside sandboxed iframes.
-  // We locate our specific iframe and send it a lightweight trigger to refresh its data.
-  const iframes = document.querySelectorAll("iframe");
-
+  // Locate our iframe and send it a lightweight trigger to refresh its data.
+  const iframes = document.querySelectorAll('iframe');
   iframes.forEach((iframe) => {
-    if (iframe.src && iframe.src.includes("index.html")) {
-      console.log(
-        "[sp-dashboard plugin] sending SP_STATE_CHANGED to",
-        iframe.src,
-      );
-      (iframe as HTMLIFrameElement).contentWindow!.postMessage(
-        {
-          type: "SP_STATE_CHANGED",
-        },
-        "*",
-      );
+    if (iframe.src && iframe.src.includes('index.html')) {
+      iframe.contentWindow?.postMessage({ type: 'SP_STATE_CHANGED' }, '*');
     }
   });
 });
 
-// Listen for language changes and notify iframe
-plugin.registerHook(PluginHooks.LANGUAGE_CHANGE, (language: string) => {
-  // Notify the iframe about language change
-  const iframe = document.querySelector('iframe[data-plugin-iframe]');
-  if (iframe && (iframe as HTMLIFrameElement).contentWindow) {
-    (iframe as HTMLIFrameElement).contentWindow!.postMessage(
-      { type: 'languageChanged', language },
-      '*',
-    );
-  }
+plugin.registerHook(PluginHooks.LANGUAGE_CHANGE, (payload) => {
+  const iframe = document.querySelector<HTMLIFrameElement>(
+    'iframe[data-plugin-iframe]',
+  );
+  iframe?.contentWindow?.postMessage(
+    { type: 'languageChanged', language: payload.code },
+    '*',
+  );
 });
