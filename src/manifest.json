@@ -1,23 +1,26 @@
 {
-  "id": "boilerplate-solid-js",
-  "name": "Solid.js Boilerplate Plugin",
+  "id": "143980574123hdfsgs",
+  "name": "Dashboard 123",
   "version": "1.0.0",
   "manifestVersion": 1,
   "minSupVersion": "8.0.0",
-  "description": "A boilerplate plugin demonstrating Solid.js integration with Super Productivity",
-  "author": "Your Name",
+  "description": "This is a dashboard applications.",
+  "author": "Jarron",
   "homepage": "https://github.com/yourusername/your-plugin",
   "repository": {
     "type": "git",
     "url": "https://github.com/yourusername/your-plugin.git"
   },
-  "permissions": [],
-  "hooks": ["taskComplete", "taskUpdate", "contextChange"],
+  "hooks": ["action"],
+  "permissions": [
+    "getTasks",
+    "getArchivedTasks",
+    "getAllProjects",
+    "persistDataSynced",
+    "loadSyncedData"
+  ],
   "iFrame": true,
   "sidePanel": false,
   "isSkipMenuEntry": false,
-  "icon": "icon.svg",
-  "i18n": {
-    "languages": ["en", "de"]
-  }
+  "icon": "icon.svg"
 }
