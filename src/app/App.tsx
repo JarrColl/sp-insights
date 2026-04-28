@@ -13,26 +13,10 @@ import './styles/breakdown.css';
 import Header from './components/Header';
 import TabbedDiv from './components/Tabs/TabbedDiv';
 import { log } from './utils/log';
-
-// Communication with plugin.js
-const sendMessage = async (type: string, payload?: any) => {
-  return new Promise((resolve) => {
-    const messageId = Math.random().toString(36).substr(2, 9);
-
-    const handler = (event: MessageEvent) => {
-      if (event.data.messageId === messageId) {
-        window.removeEventListener('message', handler);
-        resolve(event.data.response);
-      }
-    };
-
-    window.addEventListener('message', handler);
-    window.parent.postMessage({ type, payload, messageId }, '*');
-  });
-};
+import { sendMessage } from '../utils/sendMessage';
 
 function App() {
-  const t = useTranslate();
+  const translate = useTranslate();
   const [tasks, setTasks] = createSignal<Task[]>([]);
   const [projects, setProjects] = createSignal<Project[]>([]);
   const [stats, setStats] = createSignal({
@@ -40,7 +24,6 @@ function App() {
     completedToday: 0,
     pendingTasks: 0,
   });
-  const [selectedProjectId, setSelectedProjectId] = createSignal<string>('');
   const [settings, setSettings] = createSignal({ theme: 'light', showCompleted: true });
   const [isLoading, setIsLoading] = createSignal(true);
 
@@ -58,16 +41,16 @@ function App() {
 
   // Load translations
   createEffect(async () => {
-    setAppTitle(await t('APP.TITLE'));
-    setRefreshButton(await t('BUTTONS.REFRESH'));
-    setTotalTasksLabel(await t('STATS.TOTAL_TASKS'));
-    setCompletedTodayLabel(await t('STATS.COMPLETED_TODAY'));
-    setPendingLabel(await t('STATS.PENDING'));
-    setCreateNewLabel(await t('TASK.CREATE_NEW'));
-    setTaskPlaceholder(await t('TASK.ENTER_TITLE'));
-    setNoProjectLabel(await t('TASK.NO_PROJECT'));
-    setCreateButtonLabel(await t('TASK.CREATE_BUTTON'));
-    setLoadingLabel(await t('LOADING'));
+    setAppTitle(await translate('APP.TITLE'));
+    setRefreshButton(await translate('BUTTONS.REFRESH'));
+    setTotalTasksLabel(await translate('STATS.TOTAL_TASKS'));
+    setCompletedTodayLabel(await translate('STATS.COMPLETED_TODAY'));
+    setPendingLabel(await translate('STATS.PENDING'));
+    setCreateNewLabel(await translate('TASK.CREATE_NEW'));
+    setTaskPlaceholder(await translate('TASK.ENTER_TITLE'));
+    setNoProjectLabel(await translate('TASK.NO_PROJECT'));
+    setCreateButtonLabel(await translate('TASK.CREATE_BUTTON'));
+    setLoadingLabel(await translate('LOADING'));
   });
 
   // Load initial data
