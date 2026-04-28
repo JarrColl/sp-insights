@@ -23,13 +23,13 @@ interface IncomingMessage {
 }
 
 // Example: Register a menu entry
-plugin.registerMenuEntry({
-  label: 'Boilerplate Plugin',
-  icon: 'rocket',
-  onClick: () => {
-    plugin.showIndexHtmlAsView();
-  },
-});
+// plugin.registerMenuEntry({
+//   label: 'Dashboard 123',
+//   icon: 'rocket',
+//   onClick: () => {
+//     plugin.showIndexHtmlAsView();
+//   },
+// });
 
 // Example: Register keyboard shortcut
 plugin.registerShortcut({
@@ -59,19 +59,8 @@ if (plugin.onMessage) {
           pendingTasks: tasks.filter((t) => !t.isDone).length,
         };
       }
-      case 'createTask': {
-        const title = message.payload?.title ?? '';
-        const newTask = await plugin.addTask({
-          title,
-          projectId: message.payload?.projectId,
-        });
-        plugin.showSnack({
-          msg: `Task "${title}" created!`,
-          type: 'SUCCESS',
-        });
-        return newTask;
-      }
       case 'getTasks':
+        console.log('GET tasks was called!');
         return await plugin.getTasks();
       case 'getAllProjects':
         return await plugin.getAllProjects();
@@ -83,10 +72,7 @@ if (plugin.onMessage) {
         return settings ? JSON.parse(settings) : {};
       }
       case 'translate':
-        return await plugin.translate(
-          message.payload?.key ?? '',
-          message.payload?.params,
-        );
+        return await plugin.translate(message.payload?.key ?? '', message.payload?.params);
       case 'getCurrentLanguage':
         return await plugin.getCurrentLanguage();
       default:
@@ -105,14 +91,4 @@ plugin.registerHook(PluginHooks.ACTION, (payload) => {
       iframe.contentWindow?.postMessage({ type: 'SP_STATE_CHANGED' }, '*');
     }
   });
-});
-
-plugin.registerHook(PluginHooks.LANGUAGE_CHANGE, (payload) => {
-  const iframe = document.querySelector<HTMLIFrameElement>(
-    'iframe[data-plugin-iframe]',
-  );
-  iframe?.contentWindow?.postMessage(
-    { type: 'languageChanged', language: payload.code },
-    '*',
-  );
 });

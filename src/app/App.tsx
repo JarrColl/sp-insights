@@ -12,11 +12,10 @@ import './styles/table.css';
 import './styles/breakdown.css';
 import Header from './components/Header';
 import TabbedDiv from './components/Tabs/TabbedDiv';
-import { log } from './utils/log';
+import { log } from '../utils/log';
 import { sendMessage } from '../utils/sendMessage';
 
 function App() {
-  const translate = useTranslate();
   const [tasks, setTasks] = createSignal<Task[]>([]);
   const [projects, setProjects] = createSignal<Project[]>([]);
   const [stats, setStats] = createSignal({
@@ -26,32 +25,6 @@ function App() {
   });
   const [settings, setSettings] = createSignal({ theme: 'light', showCompleted: true });
   const [isLoading, setIsLoading] = createSignal(true);
-
-  // Translation signals for reactive i18n
-  const [appTitle, setAppTitle] = createSignal('');
-  const [refreshButton, setRefreshButton] = createSignal('');
-  const [totalTasksLabel, setTotalTasksLabel] = createSignal('');
-  const [completedTodayLabel, setCompletedTodayLabel] = createSignal('');
-  const [pendingLabel, setPendingLabel] = createSignal('');
-  const [createNewLabel, setCreateNewLabel] = createSignal('');
-  const [taskPlaceholder, setTaskPlaceholder] = createSignal('');
-  const [noProjectLabel, setNoProjectLabel] = createSignal('');
-  const [createButtonLabel, setCreateButtonLabel] = createSignal('');
-  const [loadingLabel, setLoadingLabel] = createSignal('');
-
-  // Load translations
-  createEffect(async () => {
-    setAppTitle(await translate('APP.TITLE'));
-    setRefreshButton(await translate('BUTTONS.REFRESH'));
-    setTotalTasksLabel(await translate('STATS.TOTAL_TASKS'));
-    setCompletedTodayLabel(await translate('STATS.COMPLETED_TODAY'));
-    setPendingLabel(await translate('STATS.PENDING'));
-    setCreateNewLabel(await translate('TASK.CREATE_NEW'));
-    setTaskPlaceholder(await translate('TASK.ENTER_TITLE'));
-    setNoProjectLabel(await translate('TASK.NO_PROJECT'));
-    setCreateButtonLabel(await translate('TASK.CREATE_BUTTON'));
-    setLoadingLabel(await translate('LOADING'));
-  });
 
   // Load initial data
   // TODO: REFRESH WHEN task change not just on mount.
