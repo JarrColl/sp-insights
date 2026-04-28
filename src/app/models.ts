@@ -1,4 +1,4 @@
-import { Task } from "@super-productivity/plugin-api";
+import { Task } from '@super-productivity/plugin-api';
 
 // type ComputedTaskFields = {
 // 	isOverdue: boolean;

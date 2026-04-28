@@ -67,14 +67,8 @@ export interface PluginFieldMapping {
   defaultDirection: PluginSyncDirection;
   /** Task fields to clear when this field is set (e.g. dueWithTime and dueDay are mutually exclusive) */
   mutuallyExclusive?: string[];
-  toIssueValue(
-    taskValue: unknown,
-    ctx: { issueId: string; issueNumber?: number },
-  ): unknown;
-  toTaskValue(
-    issueValue: unknown,
-    ctx: { issueId: string; issueNumber?: number },
-  ): unknown;
+  toIssueValue(taskValue: unknown, ctx: { issueId: string; issueNumber?: number }): unknown;
+  toTaskValue(issueValue: unknown, ctx: { issueId: string; issueNumber?: number }): unknown;
 }
 
 export interface PluginFormField {
@@ -143,11 +137,7 @@ export interface IssueProviderPluginDefinition {
     config: Record<string, unknown>,
     http: PluginHttp,
   ): Promise<PluginSearchResult[]>;
-  getById(
-    issueId: string,
-    config: Record<string, unknown>,
-    http: PluginHttp,
-  ): Promise<PluginIssue>;
+  getById(issueId: string, config: Record<string, unknown>, http: PluginHttp): Promise<PluginIssue>;
   getIssueLink(issueId: string, config: Record<string, unknown>): string;
   testConnection?(config: Record<string, unknown>, http: PluginHttp): Promise<boolean>;
   getNewIssuesForBacklog?(
@@ -169,11 +159,7 @@ export interface IssueProviderPluginDefinition {
     http: PluginHttp,
   ): Promise<{ issueId: string; issueNumber?: number; issueData: PluginIssue }>;
   extractSyncValues?(issue: PluginIssue): Record<string, unknown>;
-  deleteIssue?(
-    id: string,
-    config: Record<string, unknown>,
-    http: PluginHttp,
-  ): Promise<void>;
+  deleteIssue?(id: string, config: Record<string, unknown>, http: PluginHttp): Promise<void>;
   /** Issue states that indicate the issue was deleted remotely (e.g. ['cancelled'] for Google Calendar) */
   deletedStates?: string[];
   /** Optional time-block integration. Plugins that implement this allow SP tasks
@@ -192,11 +178,7 @@ export interface IssueProviderPluginDefinition {
       http: PluginHttp,
     ): Promise<void>;
     /** Delete the time-block event for the given task. */
-    deleteEvent(
-      taskId: string,
-      config: Record<string, unknown>,
-      http: PluginHttp,
-    ): Promise<void>;
+    deleteEvent(taskId: string, config: Record<string, unknown>, http: PluginHttp): Promise<void>;
   };
 }
 

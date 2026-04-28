@@ -1,10 +1,7 @@
 // Types for Super Productivity Plugin API
 // This package provides TypeScript types for developing plugins
 
-import {
-  IssueProviderManifestConfig,
-  IssueProviderPluginDefinition,
-} from './issue-provider-types';
+import { IssueProviderManifestConfig, IssueProviderPluginDefinition } from './issue-provider-types';
 
 export interface PluginMenuEntryCfg {
   pluginId: string;
@@ -368,9 +365,7 @@ export interface PluginAPI {
 
   registerConfigHandler(handler: () => void): void;
 
-  registerShortcut(
-    shortcutCfg: Omit<PluginShortcutCfg, 'pluginId'> & { id?: string },
-  ): void;
+  registerShortcut(shortcutCfg: Omit<PluginShortcutCfg, 'pluginId'> & { id?: string }): void;
 
   registerSidePanelButton(sidePanelBtnCfg: Omit<PluginSidePanelBtnCfg, 'pluginId'>): void;
 
@@ -547,11 +542,7 @@ export interface BatchTaskReorder {
   taskIds: string[]; // Can include tempIds for newly created tasks
 }
 
-export type BatchOperation =
-  | BatchTaskCreate
-  | BatchTaskUpdate
-  | BatchTaskDelete
-  | BatchTaskReorder;
+export type BatchOperation = BatchTaskCreate | BatchTaskUpdate | BatchTaskDelete | BatchTaskReorder;
 
 export interface BatchUpdateRequest {
   projectId: string;

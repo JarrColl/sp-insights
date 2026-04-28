@@ -16,10 +16,7 @@ export default defineConfig({
   resolve: {
     conditions: ['development', 'browser'],
     alias: {
-      '@super-productivity/plugin-api': path.resolve(
-        __dirname,
-        'src/types/sp-plugin-api/index.ts',
-      ),
+      '@super-productivity/plugin-api': path.resolve(__dirname, 'src/types/sp-plugin-api/index.ts'),
     },
   },
 });
