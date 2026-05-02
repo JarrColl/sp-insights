@@ -7,14 +7,14 @@ import { Task } from '@super-productivity/plugin-api';
 //
 // export type DashboardTask = Task & ComputedTaskFields;
 
-export interface TaskWithDueDay extends Task {
-  dueDay: string;
-}
+// export interface TaskWithDueDay extends Task {
+//   dueDay: string;
+// }
 
-interface TableEntry {
+export interface TableEntry {
   date: string;
   projectName: string;
-  projectColor: string;
+  projectColor: string | null;
   taskTitle: string;
   timeSpent: number;
   isDone: boolean;
@@ -26,7 +26,7 @@ interface DailyBreakdownEntry {
   dateStr: string;
   projectId: string | null;
   projectName: string;
-  projectColor: string;
+  projectColor: string | null;
   totalMs: number;
 }
 
@@ -35,7 +35,7 @@ interface PerDayData {
   data: number[];
 }
 
-interface Metrics {
+export interface Metrics {
   totalTimeSpent: number;
   totalCompleted: number;
   totalTasks: number;

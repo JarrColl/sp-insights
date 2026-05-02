@@ -3,13 +3,14 @@ import { Task, Project } from '@super-productivity/plugin-api';
 import Dashboard from './Dashboard';
 import DailyBreakdown from './DailyBreakdown';
 import DetailedList from './DetailedList';
+import { Metrics } from 'src/app/models';
 
 type Tab = {
   label: string;
   content: () => JSX.Element; // ← function, not JSX.Element
 };
 
-function TabbedDiv(props: { tasks: Task[]; projects: Project[] }) {
+function TabbedDiv(props: { tasks: Task[]; projects: Project[]; metrics: Metrics }) {
   const [activeTab, setActiveTab] = createSignal(0);
 
   const tabs = (): Tab[] => [
@@ -21,7 +22,7 @@ function TabbedDiv(props: { tasks: Task[]; projects: Project[] }) {
       label: 'Daily Breakdown',
       content: () => <DailyBreakdown tasks={props.tasks} projects={props.projects} />,
     },
-    { label: 'Detailed List', content: () => <DetailedList tasks={props.tasks} /> },
+    { label: 'Detailed List', content: () => <DetailedList metrics={props.metrics} /> },
   ];
 
   return (

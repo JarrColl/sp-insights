@@ -1,4 +1,4 @@
-import { MS_PER_MINUTE, MS_PER_HOUR, ROUNDING_MINUTES } from '../constants.js';
+import { MS_PER_MINUTE, MS_PER_HOUR, ROUNDING_MINUTES } from '../app/constants';
 
 export const toDateString = (dateOrMs: number | Date) =>
   new Date(dateOrMs).toISOString().split('T')[0];

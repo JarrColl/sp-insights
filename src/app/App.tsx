@@ -2,6 +2,12 @@ import { createSignal, createEffect, For, Show, onMount } from 'solid-js';
 import { Task, Project } from '@super-productivity/plugin-api';
 import { useTranslate } from '../utils/useTranslate';
 
+import Header from './components/Header';
+import TabbedDiv from './components/Tabs/TabbedDiv';
+import { log } from '../utils/log';
+import { sendMessage } from '../utils/sendMessage';
+import { processData } from './processing/processData';
+
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/tabs.css';
@@ -10,14 +16,15 @@ import './styles/stats.css';
 import './styles/charts.css';
 import './styles/table.css';
 import './styles/breakdown.css';
-import Header from './components/Header';
-import TabbedDiv from './components/Tabs/TabbedDiv';
-import { log } from '../utils/log';
-import { sendMessage } from '../utils/sendMessage';
+import { MODES } from './constants';
+import { Metrics } from './models';
+
 
 function App() {
+  // TODO: Consider if tasks/projects here can be remove and we just have a metrics signal.
   const [tasks, setTasks] = createSignal<Task[]>([]);
   const [projects, setProjects] = createSignal<Project[]>([]);
+  const [metrics, setMetrics] = createSignal<Metrics | null>(null);
   const [stats, setStats] = createSignal({
     totalTasks: 0,
     completedToday: 0,
@@ -56,6 +63,7 @@ function App() {
     if (import.meta.env.DEV) {
       const { loadMockData } = await import('./dev/loadMockData');
       loadMockData(setTasks, setProjects);
+      setMetrics(processData(tasks(), projects(), MODES.PRESET.TODAY, "", ""));
       log('Loaded mock data: ', tasks());
       return;
     }
@@ -68,6 +76,8 @@ function App() {
 
       setTasks(tasksData as Task[]);
       setProjects(projectsData as Project[]);
+
+      setMetrics(processData(tasks(), projects(), MODES.PRESET.TODAY, "", ""));
     } catch (error) {
       console.error('Failed to refresh data:', error);
     }
@@ -89,7 +99,9 @@ function App() {
       <Header />
 
       <div class="main-card">
-        <TabbedDiv tasks={tasks()} projects={projects()} />
+        {metrics === null ? "" :
+          <TabbedDiv tasks={tasks()} projects={projects()} metrics={metrics()} />
+        }
       </div>
     </div>
   );
