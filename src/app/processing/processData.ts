@@ -1,4 +1,4 @@
-import { MODES, MS_PER_DAY, UNCATEGORIZED_PROJECT_NAME } from '../constants';
+import { DATE_PRESETS, MS_PER_DAY, UNCATEGORIZED_PROJECT_NAME } from '../constants';
 import { log } from '../../utils/log';
 import { toDateString, getDatesInRange } from '../../utils/date';
 import { Project, Task } from '@super-productivity/plugin-api';
@@ -20,25 +20,27 @@ export const processData = (
   tasks: Task[],
   projects: Project[],
   preset: string,
-  dateFrom: string,
-  dateTo: string,
+  dateFrom?: string,
+  dateTo?: string,
 ): Metrics => {
   let dateFromStr: string;
   let dateToStr: string;
 
-  if (preset === MODES.PRESET.CUSTOM) {
-    dateFromStr = dateFrom;
-    dateToStr = dateTo;
+  if (preset === DATE_PRESETS.CUSTOM) {
+    dateFromStr = dateFrom || "";
+    dateToStr = dateTo || "";
   } else {
     const endObj = new Date();
     const startObj = new Date();
-    if (preset === MODES.PRESET.WEEK) {
+
+    if (preset === DATE_PRESETS.WEEK) {
       startObj.setDate(endObj.getDate() - 6);
-    } else if (preset === MODES.PRESET.MONTH) {
+    } else if (preset === DATE_PRESETS.MONTH) {
       startObj.setMonth(endObj.getMonth() - 1);
-    } else if (preset === MODES.PRESET.YEAR) {
+    } else if (preset === DATE_PRESETS.YEAR) {
       startObj.setFullYear(endObj.getFullYear() - 1);
     }
+
     dateFromStr = toDateString(startObj);
     dateToStr = toDateString(endObj);
   }

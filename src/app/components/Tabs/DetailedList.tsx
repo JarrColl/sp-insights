@@ -1,20 +1,7 @@
 import { For, Show } from 'solid-js';
 import { formatDateShort, formatTime } from '../../../utils/date';
-import { Metrics, TableEntry } from 'src/app/models';
-
-export const projectCell = (task: TableEntry) => {
-  return (
-    <>
-      {task.projectColor && (
-        <span
-          class="project-dot"
-          style={{ background: task.projectColor }}
-        />
-      )}
-      <span>{task.projectName}</span>
-    </>
-  );
-};
+import { Metrics, TableEntry } from '../../models';
+import { projectCell } from '../../render';
 
 export const getStatusBadge = (task: TableEntry) => {
   if (task.late) return { cls: "badge-yellow", label: "Late" };

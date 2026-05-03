@@ -1,6 +1,5 @@
 import { createSignal, createEffect, For, Show, onMount } from 'solid-js';
 import { Task, Project } from '@super-productivity/plugin-api';
-import { useTranslate } from '../utils/useTranslate';
 
 import Header from './components/Header';
 import TabbedDiv from './components/Tabs/TabbedDiv';
@@ -16,20 +15,18 @@ import './styles/stats.css';
 import './styles/charts.css';
 import './styles/table.css';
 import './styles/breakdown.css';
-import { MODES } from './constants';
+import { DATE_PRESETS, MODES } from './constants';
 import { Metrics } from './models';
+import { DateSelection } from './types';
 
+
+const DEFAULT_DATE_PRESET = DATE_PRESETS.TODAY;
 
 function App() {
   // TODO: Consider if tasks/projects here can be remove and we just have a metrics signal.
   const [tasks, setTasks] = createSignal<Task[]>([]);
   const [projects, setProjects] = createSignal<Project[]>([]);
   const [metrics, setMetrics] = createSignal<Metrics | null>(null);
-  const [stats, setStats] = createSignal({
-    totalTasks: 0,
-    completedToday: 0,
-    pendingTasks: 0,
-  });
   const [settings, setSettings] = createSignal({ theme: 'light', showCompleted: true });
   const [isLoading, setIsLoading] = createSignal(true);
 
@@ -45,10 +42,6 @@ function App() {
         setSettings(savedSettings);
       }
 
-      // Load stats
-      const statsData = (await sendMessage('getStats')) as any;
-      setStats(statsData);
-
       // Load tasks and projects
       await refreshData();
     } catch (error) {
@@ -58,13 +51,17 @@ function App() {
     }
   });
 
+  const calculateMetrics = async (dateSelection: DateSelection) => {
+    setMetrics(processData(tasks(), projects(), dateSelection.datePreset));
+  }
+
   // Refresh data from Super Productivity
   const refreshData = async () => {
     if (import.meta.env.DEV) {
       const { loadMockData } = await import('./dev/loadMockData');
       loadMockData(setTasks, setProjects);
-      setMetrics(processData(tasks(), projects(), MODES.PRESET.TODAY, "", ""));
-      log('Loaded mock data: ', tasks());
+      calculateMetrics({datePreset: DEFAULT_DATE_PRESET});
+      log('Loaded mock data.');
       return;
     }
 
@@ -77,7 +74,7 @@ function App() {
       setTasks(tasksData as Task[]);
       setProjects(projectsData as Project[]);
 
-      setMetrics(processData(tasks(), projects(), MODES.PRESET.TODAY, "", ""));
+      calculateMetrics({datePreset: DEFAULT_DATE_PRESET});
     } catch (error) {
       console.error('Failed to refresh data:', error);
     }
@@ -96,11 +93,11 @@ function App() {
 
   return (
     <div class="app">
-      <Header />
+      <Header onDatePresetChange={calculateMetrics} />
 
       <div class="main-card">
-        {metrics === null ? "" :
-          <TabbedDiv tasks={tasks()} projects={projects()} metrics={metrics()} />
+        {metrics() === null ? "" :
+          <TabbedDiv tasks={tasks()} projects={projects()} metrics={metrics()!} />
         }
       </div>
     </div>

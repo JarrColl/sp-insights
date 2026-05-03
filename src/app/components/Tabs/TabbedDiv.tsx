@@ -3,7 +3,7 @@ import { Task, Project } from '@super-productivity/plugin-api';
 import Dashboard from './Dashboard';
 import DailyBreakdown from './DailyBreakdown';
 import DetailedList from './DetailedList';
-import { Metrics } from 'src/app/models';
+import { Metrics } from '../../models';
 
 type Tab = {
   label: string;
@@ -20,7 +20,7 @@ function TabbedDiv(props: { tasks: Task[]; projects: Project[]; metrics: Metrics
     },
     {
       label: 'Daily Breakdown',
-      content: () => <DailyBreakdown tasks={props.tasks} projects={props.projects} />,
+      content: () => <DailyBreakdown metrics={props.metrics}/>,
     },
     { label: 'Detailed List', content: () => <DetailedList metrics={props.metrics} /> },
   ];

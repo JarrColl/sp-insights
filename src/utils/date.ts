@@ -1,4 +1,4 @@
-import { MS_PER_MINUTE, MS_PER_HOUR, ROUNDING_MINUTES } from '../app/constants';
+import { MS_PER_MINUTE, MS_PER_HOUR } from '../app/constants';
 
 export const toDateString = (dateOrMs: number | Date) =>
   new Date(dateOrMs).toISOString().split('T')[0];
@@ -43,12 +43,4 @@ export const formatTime = (milliseconds: number) => {
 
 export const formatDecimalHours = (milliseconds: number) => {
   return (milliseconds / MS_PER_HOUR).toFixed(2) + 'h';
-};
-
-// TODO: UPDATE all these and the constants to typescript, enums etc.
-export const applyRounding = (milliseconds: number, mode: string) => {
-  const minutes = ROUNDING_MINUTES[mode] || 0;
-  if (minutes === 0) return milliseconds;
-  const incrementMs = minutes * 60 * 1000;
-  return Math.round(milliseconds / incrementMs) * incrementMs;
 };

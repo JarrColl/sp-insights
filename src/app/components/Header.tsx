@@ -1,6 +1,25 @@
-// import { createSignal, createEffect, For, Show, onMount } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
+import { DATE_PRESETS, DatePreset } from '../constants';
+import { DateSelection } from '../types';
 
-function Header() {
+type HeaderProps = {
+  onDatePresetChange: (dateSelection: DateSelection) => void;
+};
+
+function Header(props: HeaderProps) {
+  const [datePreset, setDatePreset] = createSignal<DatePreset>(DATE_PRESETS.TODAY);
+  const [customDateStart, setCustomDateStart] = createSignal<string>('');
+  const [customDateEnd, setCustomDateEnd] = createSignal<string>('');
+
+  const handleDatePresetChange = (datePreset: DatePreset) => {
+    setDatePreset(datePreset);
+    if (datePreset === DATE_PRESETS.CUSTOM) {
+      props.onDatePresetChange({ datePreset: 'custom', start: customDateStart(), end: customDateEnd() });
+    } else {
+      props.onDatePresetChange({ datePreset: datePreset });
+    }
+  };
+
   return (
     <header class="header">
       <div class="title-area">
@@ -9,31 +28,44 @@ function Header() {
       </div>
 
       <div class="controls">
-        <div
-          id="custom-date-container"
-          class="control-box hidden"
-          style="flex-direction: row; gap: var(--s2, 1rem)"
-        >
-          <div style="display: flex; flex-direction: column">
-            <label for="date-from">From</label>
-            <input type="date" id="date-from" />
+        <Show when={datePreset() === DATE_PRESETS.CUSTOM}>
+          <div
+            class="control-box"
+            style={{ 'flex-direction': 'row', gap: 'var(--s2, 1rem)' }}
+          >
+            <div style={{ display: 'flex', 'flex-direction': 'column' }}>
+              <label for="date-start">From</label>
+              <input
+                type="date"
+                id="date-start"
+                value={customDateStart()}
+                onChange={(e) => setCustomDateStart(e.target.value)}
+              />
+            </div>
+            <div style={{ display: 'flex', 'flex-direction': 'column' }}>
+              <label for="date-end">To</label>
+              <input
+                type="date"
+                id="date-end"
+                value={customDateEnd()}
+                onChange={(e) => setCustomDateEnd(e.target.value)}
+              />
+            </div>
           </div>
-          <div style="display: flex; flex-direction: column">
-            <label for="date-to">To</label>
-            <input type="date" id="date-to" />
-          </div>
-        </div>
+        </Show>
 
         <div class="control-box">
           <label for="date-preset">Period</label>
-          <select id="date-preset">
-            <option value="today" selected>
-              Today
-            </option>
-            <option value="week">Past Week</option>
-            <option value="month">Past Month</option>
-            <option value="year">Past Year</option>
-            <option value="custom">Custom Range...</option>
+          <select
+            id="date-preset"
+            value={datePreset()}
+            onChange={(e) => handleDatePresetChange(e.target.value as DatePreset)}
+          >
+            <option value={DATE_PRESETS.TODAY}>Today</option>
+            <option value={DATE_PRESETS.WEEK}>Past Week</option>
+            <option value={DATE_PRESETS.MONTH}>Past Month</option>
+            <option value={DATE_PRESETS.YEAR}>Past Year</option>
+            <option value={DATE_PRESETS.CUSTOM}>Custom Range...</option>
           </select>
         </div>
       </div>

@@ -14,9 +14,9 @@
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
     "types": ["vite/client"],
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "paths": {
-      "@super-productivity/plugin-api": ["src/types/sp-plugin-api/index.ts"]
+      "@super-productivity/plugin-api": ["./src/types/sp-plugin-api/index.ts"]
     }
   },
   "include": ["src/**/*"],

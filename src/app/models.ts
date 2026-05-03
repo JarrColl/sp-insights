@@ -22,7 +22,7 @@ export interface TableEntry {
   late: boolean;
 }
 
-interface DailyBreakdownEntry {
+export interface DailyBreakdownEntry {
   dateStr: string;
   projectId: string | null;
   projectName: string;
